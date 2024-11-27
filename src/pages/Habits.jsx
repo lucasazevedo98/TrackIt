@@ -4,16 +4,45 @@ import UserContext from "../context/UserContext";
 import styled from "styled-components";
 import axios from "axios";
 import Token from "../context/Token";
+import Footer from "../components/Footer";
 
 export default function Habits() {
     const { foto } = useContext(UserContext);
     const { token } = useContext(Token);
+    const [ocultar, setOcultar] = useState("none")
 
     const [dias, setDias] = useState([]);
     const [nomeHabito, setNomeHabito] = useState("");
 
 
     const [habitos, setHabitos] = useState([])
+
+    function GravarHabito() {
+            if(ocultar === "none") {
+                setOcultar("flex")
+            } else {
+                setOcultar("none")
+            }
+    }
+
+    function atualizarHabitos() {
+            const rota = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+            const headers = {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-type": "application/json"
+                }
+            }
+            axios.get(rota, headers)
+                .then((e => {
+                    setHabitos(e.data)
+                }))
+    
+    
+        }
+    
+
+    atualizarHabitos()
 
     function selecionarDias(n) {
         if (dias.includes(n)) {
@@ -39,24 +68,25 @@ export default function Habits() {
         })
             .then((e) => (console.log(e)))
             .catch((e) => (console.log(e)))
+
+            setOcultar("none")
+
+            setDias([])
+            setNomeHabito("")
+
+
+            atualizarHabitos()
+
+
+
+
     }
 
 
-    useEffect(() => {
-        const rota = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
-        const headers = {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-type": "application/json"
-            }
-        }
-        axios.get(rota, headers)
-            .then((e => {
-                setHabitos(e.data)
-            }))
+    function Cancelar() {
+        setOcultar("none")
 
-
-    }, [])
+    }
 
     return (
         <>
@@ -64,9 +94,9 @@ export default function Habits() {
             <HabitsContainer>
                 <Titulo>
                     <h1>Meus Hábitos</h1>
-                    <button>+</button>
+                    <button onClick={GravarHabito}>+</button>
                 </Titulo>
-                <InserirHabitos>
+                <InserirHabitos ocultar={ocultar}>
                     <input
                         placeholder="nome do hábito"
                         value={nomeHabito}
@@ -83,20 +113,16 @@ export default function Habits() {
                             </button>
                         ))}
                     </Dias>
+                    <BotaoCancelar onClick={Cancelar}>Cancelar</BotaoCancelar>
                     <BotaoSalvar onClick={salvarHabito}>Salvar</BotaoSalvar>
                 </InserirHabitos>
 
 
 
 
-                    {habitos !==0 ? 
-                    
-                    habitos.map((habito,i)=>(
+                    {habitos.length !==0 ? habitos.map((habito,i)=>(
                         <Habitos key={i}>
                             <h2>{habito.name}</h2>
-
-
-                            {console.log(habito.days)}
 
                             <Dias>
                                 {["D", "S", "T", "Q", "Q", "S", "S"].map((dias,i)=>(
@@ -106,31 +132,54 @@ export default function Habits() {
 
 
                         </Habitos>
-                    ))
-                    
-                    
-                    
-                    
-                    
-                    
-                    : <p>não tem habitos</p>}
+                    )): <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>}
 
 
 
 
 
             </HabitsContainer>
+
+            <Footer />
         </>
     );
 }
 
+const BotaoCancelar = styled.button`
+
+    color:#52B6FF;
+    background-color:white;
+    border:none;
+    border-radius:0;
+    width:70px;
+    position:absolute;
+    bottom:10px;
+    right:90px;
+    cursor:pointer;
+
+
+
+`
+
 const Habitos = styled.div`
-        width: 90%;
-    height: 91px;
+    width: 90%;
+    height: 70px;
     background-color: #ffffff;
     margin-top:5px;
     display:flex;
-    flex-direction:row
+    flex-direction:column;
+    border-radius:5px;
+    padding:10px;
+    color:#666666;
+
+    &:last-child {
+        margin-bottom:90px;
+    }
+
+    h2{
+        font-size:20px;
+        font-family: "Lexend Deca";
+    }
 
 
 
@@ -140,6 +189,7 @@ const Habitos = styled.div`
 const Dias = styled.div`
     display: flex;
     background-color: white;
+    
 
     button {
         width: 30px;
@@ -160,11 +210,23 @@ const Dias = styled.div`
 
 const HabitsContainer = styled.div`
     width: 100%;
-    height: 100vh;
+    height: 100%;
     background-color: #f2f2f2;
     display: flex;
     align-items: center;
     flex-direction: column;
+    margin-top:50px;
+
+    p {
+        font-family: "Lexend Deca";
+        font-size: 17.98px;
+        font-weight: 400;
+        color:#666666;
+        margin:10px;
+
+
+    }
+
 `;
 
 const Titulo = styled.div`
@@ -173,24 +235,53 @@ const Titulo = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 90%;
+    font-size:22.98px;
+    font-weight:400;
+    font-family: "Lexend Deca";
+
+    margin:20px 5px;
+
+    button {
+        width:40px;
+        height:40px;
+        background-color:#52B6FF;
+        border-radius:5px;
+        border:none;
+        color:white;
+        font-size:27px;
+        cursor:pointer;
+    }
 `;
 
 const InserirHabitos = styled.div`
     width: 90%;
-    height: 180px;
+    height: 100px;
     background-color: #ffffff;
+    display:${props =>(props.ocultar)};
     position: relative;
-    padding: 10px;
+    padding: 14px;
+    flex-direction:column;
+    border-radius:5px;
 
     input {
         width: 90%;
+        border:1px solid #D4D4D4;
+        font-size:20px;
+        border-radius:5px;
+        border:1px solid #D4D4D4
     }
 `;
 
 const BotaoSalvar = styled.button`
     position: absolute;
-    bottom: 0px;
-    right: 0px;
+    bottom: 4px;
+    right: 3px;
     width: 70px;
     height: 30px;
+    background-color:#52B6FF;
+    color:white;
+    border:none;
+    border-radius:5px;
 `;
+
+

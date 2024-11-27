@@ -19,6 +19,12 @@ const Container = styled.header`
     align-items: center;
     font-size: 24px;
     font-weight: bold;
+    box-shadow: 0px 4px 4px 0px #00000026;
+    position:fixed;
+    z-index:1;
+    top:0;
+    left:0;
+
 
     h1 {
         font-family: "Playball";
