@@ -16,9 +16,9 @@ export default function SignUp() {
 
     function validarCampos() {
         if (email === "") return "O campo EMAIL está vazio.";
-        if (email === "") return "O campo SENHA está vazio.";
-        if (email === "") return "O campo NOME está vazio.";
-        if (email === "") return "O campo FOTO está vazio.";
+        if (senha === "") return "O campo SENHA está vazio.";
+        if (nome === "") return "O campo NOME está vazio.";
+        if (foto === "") return "O campo FOTO está vazio.";
         return null;
     }
 

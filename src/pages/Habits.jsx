@@ -1,11 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Header from "../components/Header";
 import UserContext from "../context/UserContext";
 import styled from "styled-components";
 import axios from "axios";
 import Token from "../context/Token";
 import Footer from "../components/Footer";
-import { ThreeDots } from "react-loader-spinner"; 
+import { ThreeDots } from "react-loader-spinner";
 
 export default function Habits() {
     const { foto } = useContext(UserContext);
@@ -20,31 +20,33 @@ export default function Habits() {
     const [habitos, setHabitos] = useState([])
 
     function GravarHabito() {
-            if(ocultar === "none") {
-                setOcultar("flex")
-            } else {
-                setOcultar("none")
-            }
+        if (ocultar === "none") {
+            setOcultar("flex")
+        } else {
+            setOcultar("none")
+        }
     }
 
     function atualizarHabitos() {
-            const rota = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
-            const headers = {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-type": "application/json"
-                }
+        const rota = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const headers = {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-type": "application/json"
             }
-            axios.get(rota, headers)
-                .then((e => {
-                    setHabitos(e.data)
-                }))
-    
-    
         }
-    
+        axios.get(rota, headers)
+            .then((e => {
+                setHabitos(e.data)
+            }))
 
-    atualizarHabitos()
+
+    }
+
+    useEffect(() => {
+        atualizarHabitos()
+    }, [])
+
 
     function selecionarDias(n) {
         if (dias.includes(n)) {
@@ -58,7 +60,9 @@ export default function Habits() {
         setCarregando(true);
         if (!nomeHabito.trim() || dias.length === 0) {
             alert("Preencha o nome do hábito e selecione pelo menos um dia!");
+            setCarregando(false);
             return;
+
 
         }
         const rota = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
@@ -70,14 +74,14 @@ export default function Habits() {
                 "Content-Type": "application/json",
             },
         })
-            .then(setCarregando(false))
+            .then(atualizarHabitos())
             .catch((e) => (console.log(e)))
 
-            setDias([])
-            setNomeHabito("")
+        setDias([])
+        setNomeHabito("")
 
+        setCarregando(false)
 
-            atualizarHabitos()
 
 
 
@@ -119,11 +123,11 @@ export default function Habits() {
                     </Dias>
                     <BotaoCancelar onClick={Cancelar}>Cancelar</BotaoCancelar>
                     <BotaoSalvar onClick={salvarHabito}>{carregando ? (
-                        <ThreeDots 
-                            height="30" 
-                            width="30" 
-                            color="#ffffff" 
-                            visible={true} 
+                        <ThreeDots
+                            height="30"
+                            width="30"
+                            color="#ffffff"
+                            visible={true}
                         />
                     ) : (
                         "Salvar"
@@ -133,19 +137,19 @@ export default function Habits() {
 
 
 
-                    {habitos.length !==0 ? habitos.map((habito,i)=>(
-                        <Habitos key={i}>
-                            <h2>{habito.name}</h2>
+                {habitos.length !== 0 ? habitos.map((habito, i) => (
+                    <Habitos key={i}>
+                        <h2>{habito.name}</h2>
 
-                            <Dias>
-                                {["D", "S", "T", "Q", "Q", "S", "S"].map((dias,i)=>(
-                                    <button key={i} className={habito.days.includes(i) ? "selecionado" : ""}>{dias}</button>
-                                ))}
-                            </Dias>
+                        <Dias>
+                            {["D", "S", "T", "Q", "Q", "S", "S"].map((dias, i) => (
+                                <button key={i} className={habito.days.includes(i) ? "selecionado" : ""}>{dias}</button>
+                            ))}
+                        </Dias>
 
 
-                        </Habitos>
-                    )): <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>}
+                    </Habitos>
+                )) : <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>}
 
 
 
@@ -270,7 +274,7 @@ const InserirHabitos = styled.div`
     width: 90%;
     height: 100px;
     background-color: #ffffff;
-    display:${props =>(props.ocultar)};
+    display:${props => (props.ocultar)};
     position: relative;
     padding: 14px;
     flex-direction:column;
@@ -281,7 +285,8 @@ const InserirHabitos = styled.div`
         border:1px solid #D4D4D4;
         font-size:25px;
         border-radius:5px;
-        border:1px solid #D4D4D4
+        border:1px solid #D4D4D4;
+        cursor:pointer;
     }
 `;
 
@@ -295,6 +300,7 @@ const BotaoSalvar = styled.button`
     color:white;
     border:none;
     border-radius:5px;
+    cursor:pointer;
 `;
 
 
