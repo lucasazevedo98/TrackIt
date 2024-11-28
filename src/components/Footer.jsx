@@ -1,13 +1,20 @@
-import { Link } from "react-router";
+import { Link,useLocation } from "react-router";
 import styled from "styled-components";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 
 export default function Footer() {
+    const location = useLocation()
     return (
         <Rodape>
-            <BotaoHabitos to="/habitos"><CalendarMonthIcon />Hábitos</BotaoHabitos>
-            <BotaoHoje to="/hoje"><EventAvailableIcon />Hoje</BotaoHoje>
+            <BotaoHabitos 
+            to="/habitos"
+            estaativo={location.pathname === "/habitos"}
+            ><CalendarMonthIcon />Hábitos</BotaoHabitos>
+            <BotaoHoje 
+            to="/hoje"
+            estaativo={location.pathname === "/hoje"}
+            ><EventAvailableIcon />Hoje</BotaoHoje>
         </Rodape>
     );
 }
@@ -33,8 +40,8 @@ const BotaoHabitos = styled(Link)`
     width: 50%;
     height: 65px;
     text-decoration: none;
-    background-color: #52b6ff;
-    color: white;   
+    background-color: ${(props) => (props.estaativo ? "#52B6FF" : "white")};
+    color: ${(props) => (props.estaativo ? "white" : "#D4D4D4")};
     font-size: 18px;
     border: none;
     border-radius: 0;
@@ -47,10 +54,10 @@ const BotaoHoje = styled(Link)`
     width: 50%;
     height: 65px;
     text-decoration: none;
-    background-color: white;
-    color: #D4D4D4;
+    background-color: ${(props) => (props.estaativo ? "#52B6FF" : "white")};
+    color: ${(props) => (props.estaativo ? "white" : "#D4D4D4")};
     font-size: 18px;
-    border: none;
+    border: none;   
     border-radius: 0;
     border-left: 2px solid #e5e5e5;
 `;

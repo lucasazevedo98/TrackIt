@@ -1,15 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Header from "../components/Header";
 import UserContext from "../context/UserContext";
 import styled from "styled-components";
 import axios from "axios";
 import Token from "../context/Token";
 import Footer from "../components/Footer";
+import { ThreeDots } from "react-loader-spinner"; 
 
 export default function Habits() {
     const { foto } = useContext(UserContext);
     const { token } = useContext(Token);
     const [ocultar, setOcultar] = useState("none")
+    const [carregando, setCarregando] = useState(false);
 
     const [dias, setDias] = useState([]);
     const [nomeHabito, setNomeHabito] = useState("");
@@ -53,9 +55,11 @@ export default function Habits() {
     }
 
     function salvarHabito() {
+        setCarregando(true);
         if (!nomeHabito.trim() || dias.length === 0) {
             alert("Preencha o nome do hábito e selecione pelo menos um dia!");
             return;
+
         }
         const rota = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
         const novoHabito = { name: nomeHabito, days: dias }
@@ -66,10 +70,8 @@ export default function Habits() {
                 "Content-Type": "application/json",
             },
         })
-            .then((e) => (console.log(e)))
+            .then(setCarregando(false))
             .catch((e) => (console.log(e)))
-
-            setOcultar("none")
 
             setDias([])
             setNomeHabito("")
@@ -100,12 +102,14 @@ export default function Habits() {
                     <input
                         placeholder="nome do hábito"
                         value={nomeHabito}
+                        disabled={carregando}
                         onChange={(e) => setNomeHabito(e.target.value)}
                     />
                     <Dias>
                         {["D", "S", "T", "Q", "Q", "S", "S"].map((dia, index) => (
                             <button
                                 key={index}
+                                disabled={carregando}
                                 onClick={() => selecionarDias(index)}
                                 className={dias.includes(index) ? "selecionado" : ""}
                             >
@@ -114,7 +118,16 @@ export default function Habits() {
                         ))}
                     </Dias>
                     <BotaoCancelar onClick={Cancelar}>Cancelar</BotaoCancelar>
-                    <BotaoSalvar onClick={salvarHabito}>Salvar</BotaoSalvar>
+                    <BotaoSalvar onClick={salvarHabito}>{carregando ? (
+                        <ThreeDots 
+                            height="30" 
+                            width="30" 
+                            color="#ffffff" 
+                            visible={true} 
+                        />
+                    ) : (
+                        "Salvar"
+                    )}</BotaoSalvar>
                 </InserirHabitos>
 
 
@@ -266,7 +279,7 @@ const InserirHabitos = styled.div`
     input {
         width: 90%;
         border:1px solid #D4D4D4;
-        font-size:20px;
+        font-size:25px;
         border-radius:5px;
         border:1px solid #D4D4D4
     }

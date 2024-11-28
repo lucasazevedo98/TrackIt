@@ -6,7 +6,7 @@ import UserContext from "./context/UserContext"
 import Token from "./context/Token"
 import { useState } from "react"
 import Habits from "./pages/Habits"
-import Header from "./components/Header"
+import Today from "./pages/Today"
 
 
 function App() {
@@ -25,6 +25,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/cadastro" element={<SignUp />} />
           <Route path="/habitos" element={<Habits />} />
+          <Route path="/hoje" element={<Today />} />
         </Routes>
       </BrowserRouter>
       </Token.Provider>
